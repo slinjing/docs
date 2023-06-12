@@ -1,0 +1,11 @@
+groups:
+- name: general.rules
+  rules:
+  - alert: 主机宕机
+    expr: up == 0
+    for: 15s
+    labels:
+      serverity: error
+    annotations:
+      summary: "主机 {{ $labels.instance }} 主机宕机"
+      description: "{{ $labels.instance }} job {{ $labels.job }} 实例未在线!"

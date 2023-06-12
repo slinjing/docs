@@ -1,0 +1,26 @@
+global:
+  resolve_timeout: 1m   # 每1分钟检测一次是否恢复
+  wechat_api_url: 'https://qyapi.weixin.qq.com/cgi-bin/'    # 企业微信的api_url，无需修改
+  wechat_api_corp_id: 'wwa25213dd77097c3e'      # 企业微信中企业ID
+  wechat_api_secret: 'saDXvXtC99kD0Ul6LtbW2CSNl7oP2J433Kcy00sB7sI'  #企业微信中，Prometheus应用的Secret
+
+templates:
+  - '/etc/alertmanager/*.tmpl'       # Alertmanager微信告警模板
+
+route:
+  receiver: 'wechat'
+  group_by: ['env','instance','type','group','job','alertname']
+  group_wait: 10s       # 初次发送告警延时
+  group_interval: 10s   # 距离第一次发送告警，等待多久再次发送告警
+  repeat_interval: 5m   # 告警重发时间
+
+receivers:
+- name: 'wechat'
+  wechat_configs: 
+  - send_resolved: true
+    message: '{{ template "wechat.default.message" . }}'
+    to_party: '18'         # 企业微信中创建的接收告警的告警部门ID
+    agent_id: '1000028'     # 企业微信中创建应用的AgentId
+    api_secret: 'saDXvXtC99kD0Ul6LtbW2CSNl7oP2J433Kcy00sB7sI'      # 企业微信中，Prometheus应用的Secret
+templates:
+- /etc/alertmanager/*.tmpl

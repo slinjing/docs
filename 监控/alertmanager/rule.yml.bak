@@ -1,0 +1,52 @@
+groups:
+# 报警组组名称
+    - name: node_rule
+      #报警组规则
+      rules:
+      #告警名称，需唯一
+
+      - alert: Server Status
+        #promQL表达式
+        expr: up == 0
+        #满足此表达式持续时间超过for规定的时间才会触发此报警
+        for: 10s
+        labels:
+          #严重级别
+          severity: critical
+        annotations:
+         #发出的告警标题
+          summary: "实例 {{ $labels.instance }} 关闭"
+          #发出的告警内容
+          description: "系统 {{ $labels.instance }}: 实例关闭"
+          ip: "{{ $labels.ip }}"
+
+      - alert: Memory Usage
+        expr: 100 - round(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100) > 80
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          summary: "实例 {{ $labels.instance }} 内存使用率过高"
+          description: "实例内存使用率超过 80% (当前值为: {{ $value }}%)"
+          ip: "{{ $labels.ip }}"
+
+      - alert: CPU Usage
+        expr: 100 - round(avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance)* 100) > 80
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          summary: "实例 {{ $labels.instance }} CPU使用率过高"
+          description: "实例CPU使用率超过 80% (当前值为: {{ $value }}%)"
+          ip: "{{ $labels.ip }}"
+
+      - alert: Disk Usage
+        expr: 100 - round(node_filesystem_free_bytes{fstype=~"ext3|ext4|xfs"}/node_filesystem_size_bytes {fstype=~"ext4|xfs"}
+*100) > 80
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          summary: "实例 {{ $labels.instance }} 磁盘使用率过高"
+          description: "实例磁盘使用率超过 80% (当前值为: {{ $value }}%)"
+          ip: "{{ $labels.ip }}"
