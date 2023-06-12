@@ -1,0 +1,54 @@
+version: '3.3'
+services:
+   prometheus:
+     container_name: prometheus
+     image: prom/prometheus
+     ports:
+       - "9090:9090"
+     volumes:
+       - /home/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+       - /home/prometheus/rules/alerts.yml:/etc/prometheus/rules/alerts.yml
+       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime 
+     restart: always  
+     networks: 
+       prometheus_net: 
+
+   grafana:
+     image: grafana/grafana
+     container_name: grafana
+     ports:
+       - "3000:3000"
+     volumes:
+       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime 
+     restart: always
+     networks: 
+       prometheus_net:
+
+   alertmanager:
+     image: prom/alertmanager
+     container_name: alertmanager
+     ports:
+       - '9093:9093'
+     volumes:
+       - /home/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime 
+       - /home/prometheus/muban/wechat.tmpl:/etc/alertmanager/wechat.tmpl
+     restart: always
+     networks: 
+       prometheus_net:
+
+
+   webhook-adapter:
+     image: guyongquan/webhook-adapter:latest
+     container_name: webhook-adapter
+     hostname: webhook-adapter
+     ports:
+       - "8089:80"
+     restart: always
+     command:
+       - "--adapter=/app/prometheusalert/wx.js=/wx=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=45769c32-55ec-4e25-b022-13aac9dd40e2"
+     networks: 
+       prometheus_net:
+
+networks:
+  prometheus_net:
