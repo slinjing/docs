@@ -49,7 +49,7 @@ services:
        - "8089:80"
      restart: always
      command:
-       - "--adapter=/app/prometheusalert/wx.js=/wx=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=45769c32-55ec-4e25-b022-13aac9dd40e2"
+       - "--adapter=/app/prometheusalert/wx.js=/wx=webhook地址"
      networks: 
        prometheus_net:
 
