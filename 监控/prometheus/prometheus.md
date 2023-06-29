@@ -47,4 +47,6 @@ netstat -tuplan | grep 9090
         replacement: 192.168.33.49:9116
 ---------------------------------------------
 ./promtool check config prometheus.yml  #检查配置文件
+# 热加载配置：
+curl -X POST http://192.168.32.146:9090/-/reload
 ```

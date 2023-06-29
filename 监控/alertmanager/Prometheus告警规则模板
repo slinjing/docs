@@ -1,0 +1,128 @@
+# cpu采集
+node_cpu_seconds_total
+node_load1 #1分钟内负载
+node_load5 #5分钟内负载
+node_load15 #15分钟内负载
+
+# 内存采集
+node_memory_Mapped_bytes #总内存
+node_memory_MemAvailable_bytes #空闲总内存 
+
+
+groups:
+- name: 实例存活告警规则
+  rules:
+  - alert: 实例存活告警
+    expr: up == 0
+    for: 1m
+    labels:
+      user: prometheus
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} job {{ $labels.job }} 主机宕机 !"
+      description: "{{ $labels.instance }} job {{ $labels.job }} 该主机未在线！"
+
+- name: 内存报警规则
+  rules:
+  - alert: 内存使用率告警
+    expr: 100 - (node_memory_MemAvailable_bytes / (node_memory_MemTotal_bytes))) * 100 > 80
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} job {{ $labels.job }} 服务器可用内存不足!"
+      description: "内存使用率已超过80%（当前值：{{ $value }}%）!"
+
+- name: CPU报警规则
+  rules:
+  - alert: CPU使用率告警
+    expr: 100 - (avg by (instance)(irate(node_cpu_seconds_total{mode="idle"}[1m]) )) * 100 > 80
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} job {{ $labels.job }} CPU使用率正在飙升!"
+      description: "CPU使用率超过80%（当前值：{{ $value }}%）!"
+
+- name: 磁盘使用率报警规则
+  rules:
+  - alert: 磁盘使用率告警
+    expr: 100 - node_filesystem_free_bytes{fstype=~"xfs|ext4"} / node_filesystem_size_bytes{fstype=~"xfs|ext4"} * 100 > 80
+    for: 20m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} job {{ $labels.job }} 硬盘分区使用率过高!"
+      description: "分区使用大于80%（当前值：{{ $value }}%）!"
+
+
+
+     -----------------------------------------------
+
+groups:
+- name: 主机状态-监控告警
+  rules:
+  - alert: 主机状态
+    expr: up *on(instance)group_left(nodename)(node_uname_info) == 0
+    for: 5m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{$labels.instance}}:服务器宕机"
+      description: "{{$labels.instance}}({{$labels.nodename}}):服务器延时超过3分钟"
+  - alert: 主机cpu使用情况
+    expr: 100-avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance) *100  *on(instance)group_left(nodename)(node_uname_info) > 80
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }}cpu使用率过高"
+      description: "{{ $labels.instance }}({{$labels.nodename}}):cpu使用率超过80%(当前使用率: {{ $value }}%)"
+  - alert: 主机内存使用情况
+    expr: (node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes* 100 *on(instance)group_left(nodename)(node_uname_info) > 80
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{$labels.instance}}: High Memory usage detected"
+      description: "{{$labels.instance}}({{$labels.nodename}}): 内存使用率超过 80% (当前使用率: {{ $value }}%)"
+  - alert: 主机磁盘使用情况
+    expr: 100-(node_filesystem_free_bytes{fstype=~"ext4|xfs"}/node_filesystem_size_bytes {fstype=~"ext4|xfs"})*100 *on(instance)group_left(nodename)(node_uname_info)  > 80
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }} 磁盘空间使用率过高！"
+      description: "{{ $labels.instance }}({{$labels.nodename}}): 磁盘空间使用大于80%(当前使用率: {{$value}}%)"
+  - alert: 磁盘IO性能
+    expr: 100-(avg(irate(node_disk_io_time_seconds_total[1m])) by(instance) *100) *on(instance)group_left(nodename)(node_uname_info)   < 60
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }} 流入磁盘IO使用率过高！"
+      description: "{{ $labels.instance }}({{$labels.nodename}}): 流入磁盘IO大于60%(当前使用率: {{$value}}%)"
+  - alert: TCP会话
+    expr: node_netstat_Tcp_CurrEstab *on(instance)group_left(nodename)(node_uname_info)  > 1000
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }} TCP_ESTABLISHED过高！"
+      description: "{{ $labels.instance }}({{$labels.nodename}}): TCP_ESTABLISHED大于1000%(当前使用率: {{$value}}%)"  
+  - alert: inside网络
+    expr: ((sum(rate (node_network_receive_bytes_total{device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])) by (instance)) / 100) *on(instance)group_left(nodename)(node_uname_info)   > 204800
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }} 流入网络带宽过高！"
+      description: "{{ $labels.instance }}({{$labels.nodename}}): 流入网络带宽持续2分钟高于200M(当前使用: {{$value}})"
+  - alert: outside网络
+    expr: ((sum(rate (node_network_transmit_bytes_total{device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])) by (instance)) / 100 ) *on(instance)group_left(nodename)(node_uname_info) > 204800
+    for: 3m
+    labels:
+      level: waring
+    annotations:
+      summary: "{{ $labels.instance }} 流出网络带宽过高！"
+      description: "{{ $labels.instance }}({{$labels.nodename}}): 流出网络带宽持续2分钟高于200M(当前使用: {{$value}})"

@@ -1,0 +1,35 @@
+- labels:
+    mib: HUAWEI  # 这里的名字只是个标签，无实际功能
+    brand: Huawei
+    hostname: GT-HW-AC
+    model: HUAWEI
+  targets:
+    - 192.168.110.2
+- labels:
+    mib: HUAWEI
+    brand: Huawei
+    hostname: GT-1FSW-S300
+    model: HUAWEI
+  targets:
+    - 200.200.20.2
+- labels:
+    mib: HUAWEI
+    brand: Huawei
+    hostname: GT-2FSW-S300
+    model: HUAWEI
+  targets:
+    - 200.200.30.3
+- labels:
+    mib: HUAWEI
+    brand: Huawei
+    hostname: GT-3FSW-S300
+    model: HUAWEI
+  targets:
+    - 200.200.40.2
+- labels:
+    mib: HUAWEI
+    brand: Huawei
+    hostname: GT-HX-S7703
+    model: HUAWEI
+  targets:
+    - 200.200.10.2

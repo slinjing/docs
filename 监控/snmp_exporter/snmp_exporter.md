@@ -23,37 +23,66 @@ mv generator.yml generator.yml.backup
 -------------------------------------
 #generator.yml:
 modules:
-  GT-SW-S7703:
+  HUAWEI:
     walk:
-          # 设备状态监控
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.9
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.3.1.5
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.3.1.6
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.3.1.7
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.3.1.8
-          - 1.3.6.1.4.1.2011.5.25.31.1.1.3.1.9
-          # 端口流量控制 
-          - 1.3.6.1.2.1.2.2.1
-          - 1.3.6.1.2.1.2.2.1.8
-          - 1.3.6.1.4.1.2011.5.25.41.1.7.1.1.8
-          - 1.3.6.1.4.1.2011.5.25.41.1.7.1.1.10
-          # MAC、ARP监控
-          - 1.3.6.1.2.1.17.4.3.1.1
-          - 1.3.6.1.4.1.2011.5.25.42.2.1.3.1.1
-          - 1.3.6.1.4.1.2011.5.25.42.2.1.2.1.1
-          - 1.3.6.1.4.1.2011.5.25.123.1.17.1
-          - 1.3.6.1.4.1.2011.5.25.123.1.18.1
-          # 业务监控
-          - 1.3.6.1.2.1.17.2.15.1.3
-          - 1.3.6.1.4.1.2011.5.25.113.2.2.1.4
-          - 1.3.6.1.2.1.68.1.3.1.3    
+      - 1.3.6.1.2.1.1.1                     #sysDescr
+      - 1.3.6.1.2.1.1.3                     #sysUpTimeInstance
+      - 1.3.6.1.2.1.1.5                     #sysName
+      - 1.3.6.1.2.1.2.1                     #ifNumber
+      - 1.3.6.1.2.1.2.2.1.1                 #ifIndex
+      - 1.3.6.1.2.1.2.2.1.2                 #IfDescr
+      - 1.3.6.1.2.1.2.2.1.3                 #ifType
+      - 1.3.6.1.2.1.2.2.1.5                 #ifSpeed
+      - 1.3.6.1.2.1.31.1.1.1.15             #ifHighSpeed
+      - 1.3.6.1.2.1.31.1.1.1.18             #ifAlias
+      - 1.3.6.1.2.1.2.2.1.8                 #ifOperStatus
+      - 1.3.6.1.2.1.2.2.1.13                #ifInDiscards
+      - 1.3.6.1.2.1.2.2.1.14                #ifInErrors
+      - 1.3.6.1.2.1.2.2.1.19                #ifOutDiscards
+      - 1.3.6.1.2.1.2.2.1.20                #ifOutErrors
+      - 1.3.6.1.2.1.31.1.1.1.1              #ifName
+      - 1.3.6.1.2.1.31.1.1.1.6              #ifHCInOctets
+      - 1.3.6.1.2.1.31.1.1.1.10             #ifHCOutOctets
+      - 1.3.6.1.2.1.2.2.1.10                #ifInOctets
+      - 1.3.6.1.2.1.2.2.1.16                #ifOutOctets
+      - 1.3.6.1.2.1.47.1.1.1.1.1            #entPhysicalIndex
+      - 1.3.6.1.2.1.47.1.1.1.1.7            #entPhysicalName
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5  #hwEntityCpuUsage huawei
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7  #hwEntityMemUsage huawei
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11 #hwEntityTemperature
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.10.1.7 #hwEntityFanState
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.14.1.3 #hwSystemPowerUsedPower
+      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.9  #hwEntityMemSize
+      - 1.3.6.1.4.1.2011.6.9.1.4.2.1.3      #hwStorageSpace
+      - 1.3.6.1.4.1.2011.6.9.1.4.2.1.4      #hwStorageSpaceFree 
+    #max_repetitions: 3
+    #retries: 3
+    #timeout: 25s
     version: 2
     auth:
-      community: password
-
+      community: zZPBPtYcIZ1tM
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: 1.3.6.1.2.1.2.2.1.2 # ifDescr
+      - source_indexes: [ifIndex]
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+      - source_indexes: [entPhysicalIndex]
+        lookup: 1.3.6.1.2.1.47.1.1.1.1.7 #entPhysicalName
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        ignore: true # Lookup metric
+      entPhysicalIndex:
+        ignore: true # Lookup metric
+      entPhysicalName:
+        ignore: true # Lookup metric
 ```
 ### 生成snmp.yml
 ```bash
@@ -102,21 +131,23 @@ netstat -tuplan | grep 9116
 ## prometheus.yml
 ```bash
   - job_name: 'snmp'
-#    scrape_interval: 10s
-#    scrape_timeout: 10s
+    scrape_interval: 1m
+    scrape_timeout: 30s
     static_configs:
       - targets:
-        - ip  #交换机ip
+        - 200.200.10.2  #交换机ip
+        - 192.168.110.2 
+      # - ....
     metrics_path: /snmp
     params:
-      module: [GT-SW-S7703]  
+      module: [HUAWEI]  
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 192.168.33.49:9116
+        replacement: 192.168.32.146:9116  
 -------------------------------------       
 ./promtool check config prometheus.yml  #检查配置文件
 systemctl restart prometheus.service

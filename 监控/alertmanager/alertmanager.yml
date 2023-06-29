@@ -6,9 +6,9 @@ templates:
 
 route:
   group_by: ['env','instance','type','group','job','alertname']
-  group_wait: 15s
-  group_interval: 15s
-  repeat_interval: 30s
+  group_wait: 15s        # 当收到告警的时候，等待15秒看是否还有告警，如果有就一起发出去
+  group_interval: 15s    # 发送警告间隔时间
+  repeat_interval: 30s   # 重复报警的间隔时间
   receiver: 'wechat'
  
 receivers:
