@@ -1,0 +1,50 @@
+groups:
+
+- name: WindowsExporter
+
+  rules:
+
+    - alert: Windows Server收集器错误
+      expr: 'windows_exporter_collector_success == 0'
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Windows Server收集器错误 (instance {{ $labels.instance }})
+        description: "Collector {{ $labels.collector }} was not successful VALUE = {{ $value }}  LABELS = {{ $labels }}"
+
+    - alert: Windows Server服务状态
+      expr: 'windows_service_status{status="ok"} != 1'
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: Windows Server服务状态 (instance {{ $labels.instance }})
+        description: "Windows Service state is not OK(VALUE = {{ $value }} LABELS = {{ $labels }})"
+
+    - alert: Windows Server CPU使用情况
+      expr: '100 - round(avg by (instance) (rate(windows_cpu_time_total{mode="idle"}[2m])) * 100) > 80'
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: "{{ $labels.instance }} job {{ $labels.job }} CPU使用率正在飙升!"
+        description: "CPU使用率超过80%(当前值：{{ $value }}%)!"
+
+    - alert: Windows Server 内存使用情况
+      expr: '100 - round((windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes) * 100) > 80'
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "{{ $labels.instance }} job {{ $labels.job }} 服务器可用内存不足!"
+        description: "内存使用率超过80%(当前值：{{ $value }}%)!"
+
+    - alert: Windows Server 磁盘使用情况
+      expr: '100.0 - 100 * ((windows_logical_disk_free_bytes / 1024 / 1024 ) / (windows_logical_disk_size_bytes / 1024 / 1024)) > 80'
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "{{ $labels.instance }} job {{ $labels.job }} 硬盘分区使用率过高!"
+        description: "磁盘使用率超过80%(当前值：{{ $value }}%)!"

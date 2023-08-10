@@ -1,0 +1,49 @@
+groups:
+- name: general.rules
+  rules:
+  - alert: 主机宕机
+    expr: up == 0
+    for: 15s
+    labels:
+      serverity: error
+    annotations:
+      summary: "主机 {{ $labels.instance }} 主机宕机"
+      description: "{{ $labels.instance }} job {{ $labels.job }} 实例未在线!"
+
+- name: alters.rules
+  rules:
+  - alert: 内存使用率
+    expr: 100 - round(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100) > 80
+    for: 1m
+    labels:
+       # severity: 指定告警级别。有三种等级，分别为warning、critical和emergency。严重等级依次递增。
+      severity: emergency
+    annotations:
+      # summary描述告警的概要信息
+      # description用于描述告警的详细信息。
+      summary: "主机 {{ $labels.instance }} 内存使用率过高"
+      description: "{{ $labels.instance }} 内存使用大于 80% (当前值: {{ $value }})"
+
+- name : CPU.rules
+  rules:
+  - alert: CPU Usage
+    expr: 100 - round(avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance)* 100) > 80
+    for: 1m
+    labels:
+      severity: error
+    annotations:
+      summary: "实例 {{ $labels.instance }} CPU使用率过高"
+      description: "实例CPU使用率超过 80% (当前值为: {{ $value }}%)"
+      ip: "{{ $labels.ip }}"
+
+- name: Disk.rules
+  rules:
+    - alert: Disk Usage
+      expr: 100 - round(node_filesystem_free_bytes{fstype=~"ext3|ext4|xfs"}/node_filesystem_size_bytes {fstype=~"ext4|xfs"}* 100) > 80
+      for: 1m
+      labels:
+        severity: error
+      annotations:
+        summary: "实例 {{ $labels.instance }} 磁盘使用率过高"
+        description: "实例磁盘使用率超过 80% (当前值为: {{ $value }}%)"
+        ip: "{{ $labels.ip }}"

@@ -1,8 +1,8 @@
 global:
   resolve_timeout: 15s
 
-templates:
-  - '/etc/alertmanager/*.tmpl'       # Alertmanager微信告警模板
+# templates:
+#   - '/etc/alertmanager/*.tmpl'       # Alertmanager微信告警模板
 
 route:
   group_by: ['env','instance','type','group','job','alertname']

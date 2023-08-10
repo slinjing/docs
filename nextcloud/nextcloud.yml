@@ -1,0 +1,89 @@
+version: '3'
+services:
+  nextcloud_db:
+    image: mariadb:latest
+    container_name: nextcloud_db
+    restart: on-failure 
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
+    volumes:
+      - /home/nextcloud/nextcloud_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456Aa
+      - MYSQL_PASSWORD=123456Aa
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=nextcloud_db
+    networks:
+      nextcloud_net:
+
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: on-failure
+    ports:
+      - 1080:80
+      - 1443:443
+    links:
+      - nextcloud_db
+      - redis
+    volumes:
+      - /home/nextcloud/nextcloud:/var/www/html
+      # - /home/nextcloud/data:/var/www/html/data
+      # - /home/nextcloud/config.php:/var/www/html/config/config.php
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - MYSQL_PASSWORD=123456Aa
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=nextcloud_db
+    depends_on:
+      - redis
+      - nextcloud_db
+      # - collabora
+      # 升级命令：docker exec -it nextcloud updater.phar（国内可能该命令升级不成功）
+      # 定时任务：
+      # */10 * * * * /usr/bin/docker exec -i nextcloud sudo -u abc php -f /config/www/nextcloud/cron.php
+    networks:
+      nextcloud_net:
+
+  # office组件
+  # collabora:
+  #   image: collabora/code
+  #   container_name: collabora
+  #   privileged: true
+  #   environment:
+  #     - TZ=Asia/Shanghai
+  #     - aliasgroup1=https://pan.inwo.win:7443
+  #     - username=admin
+  #     - password=Abc.123456
+  #     - dictionaries=de en es zh
+  #     # 扩展指令，关闭ssl验证和欢迎界面
+  #     - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:welcome.enable=false
+  #     - DONT_GEN_SSL_CERT=true
+  #   cap_add:
+  #     - MKNOD
+  #   ports:
+  #     - 9980:9980
+  #   restart: always
+  #   volumes:
+  #     - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+
+  redis:
+    image: redis:latest
+    container_name: nextcloud_redis
+    restart: on-failure
+    ports:
+      - 6379:6379
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - /home/nextcloud/redis/data:/data
+      - /home/nextcloud/redis/redis.conf:/etc/redis/redis.conf
+      - /home/nextcloud/redis/logs:/logs
+    command: redis-server /etc/redis/redis.conf --requirepass Abc.123456 --appendonly yes
+    networks:
+      nextcloud_net: 
+
+networks:
+  nextcloud_net:

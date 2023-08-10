@@ -19,7 +19,7 @@ groups:
       severity: warning
     annotations:
       summary: "{{ $labels.instance }} job {{ $labels.job }} 服务器可用内存不足!"
-      description: "内存使用率已超过80%（当前值：{{ $value }}%）!"
+      description: "{{ $labels.instance }} 内存使用率已超过80%（当前值：{{ $value }}）!"
 
 - name: CPU报警规则
   rules:
@@ -30,7 +30,7 @@ groups:
       severity: warning
     annotations:
       summary: "{{ $labels.instance }} job {{ $labels.job }} CPU使用率正在飙升!"
-      description: "CPU使用率超过80%（当前值：{{ $value }}%）!"
+      description: "{{ $labels.instance }} CPU使用率超过80%（当前值：{{ $value }}）!"
 
 - name: 磁盘使用率报警规则
   rules:
@@ -41,4 +41,4 @@ groups:
       severity: warning
     annotations:
       summary: "{{ $labels.instance }} job {{ $labels.job }} 硬盘分区使用率过高!"
-      description: "分区使用大于80%（当前值：{{ $value }}%）!"
+      description: "{{ $labels.instance }} 分区使用大于80%（当前值：{{ $value }}）!"

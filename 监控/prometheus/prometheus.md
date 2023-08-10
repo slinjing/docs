@@ -45,8 +45,33 @@ netstat -tuplan | grep 9090
         target_label: instance
       - target_label: __address__
         replacement: 192.168.33.49:9116
----------------------------------------------
-./promtool check config prometheus.yml  #检查配置文件
-# 热加载配置：
-curl -X POST http://192.168.32.146:9090/-/reload
 ```
+### 基于文件的服务发现
+```
+vim prometheus.yml
+  - job_name: 'file_sd'
+    file_sd_configs:
+    - files:
+      - 'sd_config/*.yml'
+      refresh_interval: 5s  # 每隔5秒检查一次
+```
+vim sd_config/windows.yml
+```yaml
+- targets:
+  - "192.168.33.205:9182"
+  - "192.168.32.146:9100"
+  - "192.168.33.205:9182"
+  - "121.41.114.211:9100"
+  - "34.239.0.205:9100"
+  - "192.168.1.221:9100"
+  - "10.1.20.201:9100"
+  - "10.1.20.247:9100"
+```
+```
+交换机
+
+```
+### 检查配置文件
+./promtool check config prometheus.yml  
+### 热加载配置：
+curl -X POST http://192.168.32.146:9090/-/reload
