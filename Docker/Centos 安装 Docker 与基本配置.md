@@ -92,21 +92,26 @@ Docker Root Dir: /var/lib/docker
 ```shell
 # 停止docker服务
 $ systemctl stop docker
+
 # 修改/etc/docker/daemon.json，加入一行新配置
 $ cat /etc/docker/daemon.json
 {  
 "registry-mirrors": ["https://registry.cn-hangzhou.aliyuncs.com"],
 "data-root": "/home/docker"  # 新存储路径必须存在
 }
+
 # 数据迁移
 $ yum -y install rsync
 $ rsync -avz /var/lib/docker /home/docker
+
 # 重启docker
 $ systemctl restart docker
+
 # 检查验证
 $ docker info | grep Dir
 $ docker ps -a
 $ docker images
+
 # 验证无误后删除原目录
 $ rm -rf /var/lib/docker/*
 ```
