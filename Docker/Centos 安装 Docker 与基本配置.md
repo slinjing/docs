@@ -60,7 +60,7 @@ $ systemctl enable docker --now
 # 腾讯云 docker hub 镜像
 https://mirror.ccs.tencentyun.com
 # DaoCloud 镜像
-http://f1361db2.m.daocloud.io
+https://docker.m.daocloud.io
 # 阿里云 docker hub 镜像
 https://registry.cn-hangzhou.aliyuncs.com
 ```
