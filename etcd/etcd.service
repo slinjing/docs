@@ -1,0 +1,28 @@
+[Unit]
+Description=etcd
+Documentation=https://github.com/coreos
+
+[Service]
+ExecStart=/usr/local/bin/etcd \\
+  --name etcd1 \\
+  --cert-file=/etc/etcd/ssl/etcd.pem \\
+  --key-file=/etc/etcd/ssl/etcd-key.pem \\
+  --peer-cert-file=/etc/etcd/ssl/etcd.pem  \\
+  --peer-key-file=/etc/etcd/ssl/etcd-key.pem \\
+  --trusted-ca-file=/etc/etcd/ssl/ca.pem \\
+  --peer-trusted-ca-file=/etc/etcd/ssl/etcd.pem \\
+  --peer-client-cert-auth \\
+  --client-cert-auth \\
+  --initial-advertise-peer-urls https://192.168.183.163:2380 \\
+  --listen-peer-urls https://192.168.183.163:2380 \\
+  --listen-client-urls https://192.168.183.163:2379,https://127.0.0.1:2379 \\
+  --advertise-client-urls https://192.168.183.163:2379 \\
+  --initial-cluster-token etcd-cluster-1 \\
+  --initial-cluster etcd1=https://192.168.183.163:2380,etcd2=https://192.168.183.167:2380,etcd3=https://192.168.183.166:2380 \\
+  --initial-cluster-state new \\
+  --data-dir=/var/lib/etcd
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
