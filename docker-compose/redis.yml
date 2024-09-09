@@ -1,0 +1,93 @@
+version: "3"
+services:
+  redis01:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6701:6379"
+      - "16701:16379"
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+      - appendonly=yes
+      - cluster-enabled=yes
+    volumes:
+      - /home/redis/6701:/data
+    command: redis-server --cluster-announce-port 6701 --cluster-announce-bus-port 16701 --appendonly yes  --cluster-enabled yes
+
+
+  redis02:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6702:6379"
+      - "16702:16379"      
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+      - appendonly=yes
+      - cluster-enabled=yes
+    volumes:
+      - /home/redis/6702:/data
+    command: redis-server --cluster-announce-port 6702 --cluster-announce-bus-port 16702 --appendonly yes  --cluster-enabled yes   
+
+  redis03:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6703:6379"
+      - "16703:16379"
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+    command: redis-server --cluster-announce-port 6703 --cluster-announce-bus-port 16703 --appendonly yes  --cluster-enabled yes
+    volumes:
+      - /home/redis/6703:/data
+
+
+  redis04:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6704:6379"
+      - "16704:16379"
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+    command: redis-server --cluster-announce-port 6704 --cluster-announce-bus-port 16704 --appendonly yes  --cluster-enabled yes
+    volumes:
+      - /home/redis/6704:/data
+
+
+  redis05:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6705:6379"
+      - "16705:16379"
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+    command: redis-server --cluster-announce-port 6705 --cluster-announce-bus-port 16705 --appendonly yes  --cluster-enabled yes
+    volumes:
+      - /home/redis/6705:/data
+
+
+  redis06:
+    image: 'redis:6.2.4'
+    restart: "always"
+    hostname: "redis"
+    ports:
+      - "6706:6379"
+      - "16706:16379"
+    privileged: true
+    environment:
+      - TZ=Asia/Shanghai
+    command: redis-server --cluster-announce-port 6706 --cluster-announce-bus-port 16706 --appendonly yes  --cluster-enabled yes 
+    volumes:
+      - /home/redis/6706:/data
