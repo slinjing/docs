@@ -7,4 +7,4 @@ services:
        - "9090:9090"
      volumes:
        - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-     restart: always 
+     restart: always  
