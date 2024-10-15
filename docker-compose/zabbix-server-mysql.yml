@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  zabbix-mysql:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/mysql:8.0
+    container_name: zabbix-mysql
+    environment:
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix_pwd
+      MYSQL_ROOT_PASSWORD: root_pwd
+    volumes:
+      - zabbix-mysql:/var/lib/mysql
+    networks:
+      - zabbix-net
+
+  zabbix-server-mysql:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-server-mysql:ubuntu-7.0-latest
+    container_name: zabbix-server-mysql
+    environment:
+      DB_SERVER_HOST: zabbix-mysql
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix_pwd
+      MYSQL_ROOT_PASSWORD: root_pwd
+    depends_on:
+      - zabbix-mysql
+    volumes:
+      - zabbix-server:/var/lib/zabbix
+    ports:
+      - "10051:10051"
+    networks:
+      - zabbix-net
+
+  zabbix-web-nginx-mysql:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-web-nginx-mysql:ubuntu-7.0-latest
+    container_name: zabbix-web-nginx-mysql
+    environment:
+      DB_SERVER_HOST: zabbix-mysql
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix_pwd
+      MYSQL_ROOT_PASSWORD: root_pwd
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: Asia/Shanghai
+    depends_on:
+      - zabbix-server-mysql
+    ports:
+      - "8089:8080"
+    networks:
+      - zabbix-net
+
+  zabbix-agent:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-agent:ubuntu-7.0-latest
+    container_name: zabbix-agent
+    environment:
+      ZBX_SERVER_HOST: zabbix-server-mysql
+      HOSTNAME: zabbix-agent
+    depends_on:
+      - zabbix-server-mysql
+    networks:
+      - zabbix-net
+
+volumes:
+  zabbix-mysql:
+  zabbix-server:
+
+networks:
+  zabbix-net:
+    driver: bridge
+
+
