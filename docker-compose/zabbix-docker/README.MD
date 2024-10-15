@@ -9,5 +9,11 @@
 ## Agent
 部署完成后需要修改 Agent 地址为 zabbix-agent 容器地址：110.20.240.5，否则代理无法连接。
 
+## 删除
+```shell
+$ docker-compose down
+$ docker volume rm zabbix-docker_zabbix-mysql zabbix-docker_zabbix-server
+```
+
 
 
