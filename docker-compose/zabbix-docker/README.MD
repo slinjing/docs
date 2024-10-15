@@ -7,7 +7,7 @@
 修改 .env 文件中的 ZABBIX_UBUNTU_IMAGE_TAG 参数，目前只支持 ubuntu-5.0-latest、ubuntu-6.0-latest 和 ubuntu-7.0-latest。
 
 ## Agent
-部署完成后需要修改 Agent 地址为 zabbix-agent 容器地址，否则代理无法连接。
+部署完成后需要修改 Agent 地址为 zabbix-agent 容器地址：110.20.240.5，否则代理无法连接。
 
 
 
