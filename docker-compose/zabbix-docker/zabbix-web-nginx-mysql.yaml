@@ -1,0 +1,34 @@
+services:
+  zabbix-web-nginx-mysql:
+    image: "${IMAGES_REGISTRY}/${ZABBIX_WEB_NGINX_MYSQL_IMAGE}:${ZABBIX_UBUNTU_IMAGE_TAG}"
+    container_name: zabbix-web-nginx-mysql
+    environment:
+      DB_SERVER_HOST: zabbix-mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      ZBX_SERVER_HOST: zabbix-server-mysql
+      PHP_TZ: Asia/Shanghai
+    restart: "${RESTART_POLICY}"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.70"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    depends_on:
+      - zabbix-server-mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "${ZABBIX_WEB_PORT}:8080"
+    networks:
+      zabbix-net:
+        ipv4_address: ${ZABBIX_WEB_ADDRESS}

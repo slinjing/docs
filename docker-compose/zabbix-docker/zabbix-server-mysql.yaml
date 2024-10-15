@@ -1,0 +1,29 @@
+services:
+  zabbix-server-mysql:
+    image: "${IMAGES_REGISTRY}/${ZABBIX_SERVER_MYSQL_IMAGE}:${ZABBIX_UBUNTU_IMAGE_TAG}"
+    container_name: zabbix-server-mysql
+    environment:
+      DB_SERVER_HOST: zabbix-mysql
+      ZBX_JAVAGATEWAY: zabbix-java-gateway
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: "${RESTART_POLICY}"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.70"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    depends_on:
+      - zabbix-mysql
+    volumes:
+      - zabbix-server:/var/lib/zabbix:rw 
+    ports:
+      - "${ZABBIX_SERVER_PORT}:10051"
+    networks:
+      zabbix-net:
+        ipv4_address: ${ZABBIX_SERVER_MYSQL_ADDRESS}

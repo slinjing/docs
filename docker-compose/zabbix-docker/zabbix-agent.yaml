@@ -1,0 +1,13 @@
+services:
+  zabbix-agent:
+    image: "${IMAGES_REGISTRY}/${ZABBIX_AGENT_IMAGE}:${ZABBIX_UBUNTU_IMAGE_TAG}"
+    container_name: zabbix-agent
+    environment:
+      ZBX_SERVER_HOST: 110.20.240.3,zabbix-server-mysql
+      HOSTNAME: zabbix-agent
+    restart: "${RESTART_POLICY}"
+    depends_on:
+      - zabbix-server-mysql
+    networks:
+      zabbix-net:
+        ipv4_address: ${ZABBIX_AGENT_ADDRESS}
