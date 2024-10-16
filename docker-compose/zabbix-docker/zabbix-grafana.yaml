@@ -1,0 +1,16 @@
+services:
+  zabbix-grafana:
+    image: "${IMAGES_REGISTRY}/${GRAFANA_IMAGES}:${GRAFANA_TAG}"
+    container_name: zabbix-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - "GF_SECURITY_ADMIN_PASSWORD=123456Aa"
+      - "GF_INSTALL_PLUGINS=alexanderzobnin-zabbix-app"
+    privileged: true    # Permission denied时加
+    volumes:
+      - zabbix-grafana:/var/lib/grafana  
+    restart: "${RESTART_POLICY}"
+    networks:
+      zabbix-net:
+        ipv4_address: ${GRAFANA_ADDRESS}

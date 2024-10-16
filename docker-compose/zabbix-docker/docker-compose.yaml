@@ -12,11 +12,13 @@ include:
   - zabbix-mysql.yaml
   - zabbix-agent.yaml
   - zabbix-web-nginx-mysql.yaml
+  # - zabbix-grafana.yaml
 
 
 volumes:
   zabbix-mysql:
   zabbix-server:
+  # zabbix-grafana:
 
 networks:
   zabbix-net:

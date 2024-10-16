@@ -15,5 +15,9 @@ $ docker-compose down
 $ docker volume rm zabbix-docker_zabbix-mysql zabbix-docker_zabbix-server
 ```
 
+## Grafana
+```shell
+http://zabbix-web-nginx-mysql:8080/api_jsonrpc.php
+```
 
 
