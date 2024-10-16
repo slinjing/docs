@@ -9,10 +9,14 @@ services:
       MYSQL_USER: zabbix
       MYSQL_PASSWORD: zabbix_pwd
       MYSQL_ROOT_PASSWORD: root_pwd
+    command: 
+      - --character-set-server=utf8 
+      - --collation-server=utf8_general_ci
     volumes:
       - zabbix-mysql:/var/lib/mysql
     networks:
-      - zabbix-net
+      zabbix-net:
+        ipv4_address: 172.20.240.5
 
   zabbix-server-mysql:
     image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-server-mysql:ubuntu-7.0-latest
@@ -30,7 +34,8 @@ services:
     ports:
       - "10051:10051"
     networks:
-      - zabbix-net
+      zabbix-net:
+        ipv4_address: 172.20.240.4
 
   zabbix-web-nginx-mysql:
     image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-web-nginx-mysql:ubuntu-7.0-latest
@@ -48,18 +53,20 @@ services:
     ports:
       - "8089:8080"
     networks:
-      - zabbix-net
+      zabbix-net:
+        ipv4_address: 172.20.240.3
 
   zabbix-agent:
     image: registry.cn-chengdu.aliyuncs.com/shulinjing/zabbix-agent:ubuntu-7.0-latest
     container_name: zabbix-agent
     environment:
-      ZBX_SERVER_HOST: zabbix-server-mysql
+      ZBX_SERVER_HOST: 172.20.240.4,zabbix-server-mysql
       HOSTNAME: zabbix-agent
     depends_on:
       - zabbix-server-mysql
     networks:
-      - zabbix-net
+      zabbix-net:
+        ipv4_address: 172.20.240.2
 
 volumes:
   zabbix-mysql:
@@ -68,5 +75,8 @@ volumes:
 networks:
   zabbix-net:
     driver: bridge
-
+    ipam:
+     config:
+       - subnet: 172.20.240.0/28
+         gateway: 172.20.240.1
 
