@@ -21,8 +21,8 @@ install_docker_centos7() {
   echo -e "\e[0m\e[33mdocker compose版本：$(docker compose version)\e[0m"
 }
 
-
-install_docker_ce_on_ubuntu() {
+# ubuntu 安装docker
+install_docker_ubuntu() {
   echo -e "\e[0m\e[33m正在安装docker...\e[0m"   
   # 安装依赖
   echo -e "\e[0m\e[33m安装依赖...\e[0m"  
@@ -51,7 +51,6 @@ if [ -f /etc/os-release ]; then
   echo -e "\e[0m\e[33m操作系统版本为: $ID linux $VERSION_ID\e[0m"  
   case "$ID" in
     centos|rocky)
-      # CentOS 或 Rocky Linux 的安装步骤
       VERSION_ID=$(echo "$VERSION_ID" | cut -d'.' -f1)
       if [ "$VERSION_ID" == "7" ]; then
           install_docker_centos7
