@@ -1,0 +1,35 @@
+version: 0.1
+log:
+  accesslog:
+    disabled: true
+  level: debug
+  formatter: text
+  fields:
+    service: registry
+    environment: staging
+storage:
+  delete:
+    enabled: true
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+auth:
+  htpasswd:
+    realm: basic-realm
+    path: ./auth/nginx.htpasswd
+http:
+  addr: :443
+  host: https://docker.gt.com
+  headers:
+    X-Content-Type-Options: [nosniff]
+  http2:
+    disabled: false
+  tls:
+    certificate: ./ssl/docker.gt.com.crt
+    key: ./ssl/docker.gt.com.key
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+threshold: 3

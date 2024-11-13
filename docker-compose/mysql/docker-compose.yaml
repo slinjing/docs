@@ -1,0 +1,35 @@
+services:
+  mysql-master:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/mysql:5.7
+    container_name: mysql-master
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456Aa
+    restart: unless-stopped 
+    volumes:
+      - ./master/data:/var/lib/mysql
+      - ./master/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    networks:
+      mysql-net:
+
+  mysql-slave:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/mysql:5.7
+    container_name: mysql-slave
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456Aa
+    restart: unless-stopped 
+    volumes:
+      - ./slave/data:/var/lib/mysql
+      - ./slave/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    networks:
+      mysql-net:
+
+networks:
+  mysql-net:

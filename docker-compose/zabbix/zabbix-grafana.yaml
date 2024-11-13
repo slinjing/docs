@@ -7,7 +7,7 @@ services:
     environment:
       - "GF_SECURITY_ADMIN_PASSWORD=123456Aa"
       - "GF_INSTALL_PLUGINS=alexanderzobnin-zabbix-app"
-    privileged: true    # Permission denied时加
+    privileged: true    # Permission denied 时加
     volumes:
       - zabbix-grafana:/var/lib/grafana  
     restart: "${RESTART_POLICY}"

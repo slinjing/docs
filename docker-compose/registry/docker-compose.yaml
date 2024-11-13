@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  registry:
+    image: registry.cn-chengdu.aliyuncs.com/shulinjing/registry
+    ports:
+      - "443:443"
+    volumes:
+      - ./:/etc/docker/registry
+      - registry-data:/var/lib/registry
+
+volumes:
+  registry-data:
