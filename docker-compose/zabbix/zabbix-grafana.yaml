@@ -1,15 +1,27 @@
 services:
+  init_grafana:
+    image: "${IMAGES_REGISTRY}/${GRAFANA_IMAGES}:${GRAFANA_TAG}"
+    user: root
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        chown -R 65534:65534 /var/lib/grafana
+    volumes:
+      - /data/zabbix/zabbix-grafana:/var/lib/grafana
   zabbix-grafana:
     image: "${IMAGES_REGISTRY}/${GRAFANA_IMAGES}:${GRAFANA_TAG}"
     container_name: zabbix-grafana
     ports:
       - "3000:3000"
+    user: "65534"
     environment:
       - "GF_SECURITY_ADMIN_PASSWORD=123456Aa"
       - "GF_INSTALL_PLUGINS=alexanderzobnin-zabbix-app"
-    privileged: true    # Permission denied 时加
+    depends_on:
+      - init_grafana
     volumes:
-      - zabbix-grafana:/var/lib/grafana  
+      - /data/zabbix/zabbix-grafana:/var/lib/grafana
     restart: "${RESTART_POLICY}"
     networks:
       zabbix-net:
